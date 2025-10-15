@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Note Taker</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>📝 Smart Note Taker</h1>
+
+  <div class="note-input">
+    <textarea id="noteText" placeholder="Write your note here..." rows="4"></textarea>
+
+    <div class="note-options">
+      <input type="datetime-local" id="noteDate">
+      <input type="color" id="noteColor" value="#fff8dc" title="Choose note color">
+      <button id="addNoteBtn">Add Note</button>
+    </div>
+  </div>
+
+  <h2>Your Notes</h2>
+  <div id="notesContainer" class="notes-container"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>
