@@ -62,21 +62,39 @@ function editNote(index) {
   deleteNote(index);
 }
 
-// 🔔 Check for reminders every 10 seconds
-setInterval(() => {
+
+// Request permission for notifications on page load
+if ("Notification" in window && Notification.permission !== "granted") {
+  Notification.requestPermission();
+}
+
+// Function to schedule reminders for all notes
+function scheduleReminders() {
   const now = new Date().getTime();
+
   notes.forEach((note, i) => {
     if (note.date && !note.notified) {
       const reminderTime = new Date(note.date).getTime();
-      if (reminderTime <= now) {
+      const delay = reminderTime - now;
+
+      if (delay > 0) {
+        // Schedule the notification
+        setTimeout(() => {
+          notifyUser(note.text);
+          notes[i].notified = true;
+          localStorage.setItem("notes", JSON.stringify(notes));
+        }, delay);
+      } else {
+        // If the reminder time is already passed, notify immediately
         notifyUser(note.text);
         notes[i].notified = true;
         localStorage.setItem("notes", JSON.stringify(notes));
       }
     }
   });
-}, 10000);
+}
 
+// Function to show the notification
 function notifyUser(message) {
   if ("Notification" in window && Notification.permission === "granted") {
     new Notification("🔔 Note Reminder", {
@@ -88,4 +106,9 @@ function notifyUser(message) {
   }
 }
 
+// Call this after displaying notes or adding a new note
+scheduleReminders();
+
+
 displayNotes();
+
