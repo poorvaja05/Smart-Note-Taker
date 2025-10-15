@@ -1,10 +1,13 @@
+
+
 let notes = JSON.parse(localStorage.getItem("notes")) || [];
 
-// Ask permission for notifications
+// Request permission for notifications on page load
 if ("Notification" in window && Notification.permission !== "granted") {
   Notification.requestPermission();
 }
 
+// Add a new note
 document.getElementById("addNoteBtn").addEventListener("click", function () {
   const text = document.getElementById("noteText").value.trim();
   const date = document.getElementById("noteDate").value;
@@ -24,8 +27,10 @@ document.getElementById("addNoteBtn").addEventListener("click", function () {
   document.getElementById("noteColor").value = "#fff8dc";
 
   displayNotes();
+  scheduleReminders();
 });
 
+// Display notes
 function displayNotes() {
   const notesContainer = document.getElementById("notesContainer");
   notesContainer.innerHTML = "";
@@ -48,12 +53,15 @@ function displayNotes() {
   });
 }
 
+// Delete note
 function deleteNote(index) {
   notes.splice(index, 1);
   localStorage.setItem("notes", JSON.stringify(notes));
   displayNotes();
+  scheduleReminders();
 }
 
+// Edit note
 function editNote(index) {
   const note = notes[index];
   document.getElementById("noteText").value = note.text;
@@ -62,13 +70,7 @@ function editNote(index) {
   deleteNote(index);
 }
 
-
-// Request permission for notifications on page load
-if ("Notification" in window && Notification.permission !== "granted") {
-  Notification.requestPermission();
-}
-
-// Function to schedule reminders for all notes
+// 🔔 Schedule notifications for all notes
 function scheduleReminders() {
   const now = new Date().getTime();
 
@@ -78,14 +80,13 @@ function scheduleReminders() {
       const delay = reminderTime - now;
 
       if (delay > 0) {
-        // Schedule the notification
         setTimeout(() => {
           notifyUser(note.text);
           notes[i].notified = true;
           localStorage.setItem("notes", JSON.stringify(notes));
         }, delay);
       } else {
-        // If the reminder time is already passed, notify immediately
+        // If reminder time already passed, notify immediately
         notifyUser(note.text);
         notes[i].notified = true;
         localStorage.setItem("notes", JSON.stringify(notes));
@@ -94,7 +95,7 @@ function scheduleReminders() {
   });
 }
 
-// Function to show the notification
+// Show notification
 function notifyUser(message) {
   if ("Notification" in window && Notification.permission === "granted") {
     new Notification("🔔 Note Reminder", {
@@ -106,9 +107,6 @@ function notifyUser(message) {
   }
 }
 
-// Call this after displaying notes or adding a new note
-scheduleReminders();
-
-
+// Initialize
 displayNotes();
-
+scheduleReminders();
